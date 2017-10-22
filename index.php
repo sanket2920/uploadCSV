@@ -76,7 +76,10 @@
 			$imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
 			$imageFileName = pathinfo($target_file,PATHINFO_BASENAME);
 			move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file);
+			
+			header("Location: https://web.njit.edu/~sp2363/uploadCSV/index.php?page=table&filename=".$_FILES["fileToUpload"]["name"]);
 			}
+
 	}
 	
 	class htmlTable extends page {
@@ -91,6 +94,32 @@
 			return strLen($text);
 		}	
 	}
+	class table extends page {
+		public function get() {
+			$firstRow = true;
+			$this->html .= '<table border=1>';
+			$name= "Uploads/".$_REQUEST['filename'];
+			$f = fopen($name,"r");
+			while (($line = fgetcsv($f)) !== false) {
+				$this->html .= '<tr>';
+				if($firstRow) {
+					foreach ($line as $cell) {
+						$this->html .='<th>' . htmlspecialchars($cell). '</th>';
+					}
+				$firstRow=false;
+				}
+				else {
+				foreach($line as $cell) {
+					$this->html.='<td>'.htmlspecialchars($cell).'</td>';
+					}
+				}
+				
+			}
+			fclose($f);
+				$this->html.='</table>';
+		}
+	}
 ?>
+
 
 
